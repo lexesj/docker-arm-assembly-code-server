@@ -12,5 +12,9 @@ RUN \
   yes | npx vsce package && \
   install-extension cortex-debug-dp-stm32f4-*.vsix && \
   cd .. && \
+  echo "**** install runtime dependencies ****" && \
+  apt-get install -y \
+    gcc-arm-none-eabi \
+    gdb - multiarch && \
   echo "**** clean up ****" && \
   rm -rf ./cortex-debug-db-stm32f4
