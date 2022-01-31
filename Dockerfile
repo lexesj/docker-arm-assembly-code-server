@@ -1,3 +1,34 @@
+# build gem5 stage
+FROM ubuntu:focal AS gem5-builder
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+WORKDIR /tmp
+
+RUN \
+  echo "**** install build dependencies ****" && \
+  apt-get update && \
+  apt-get install -y \ 
+    build-essential \
+    git \
+    m4 \
+    scons \
+    zlib1g \
+    zlib1g-dev \
+    libprotobuf-dev \
+    protobuf-compiler \
+    libprotoc-dev \
+    libgoogle-perftools-dev \
+    python3-dev \
+    python3-six \
+    python-is-python3 \
+    libboost-all-dev \
+    pkg-config && \
+  echo "**** build gem5 ****" && \
+  git clone https://github.com/devplayer0/gem5 && \
+  cd gem5 && \
+  scons build/ARM/gem5.fast -j 16
+
 # build extension stage
 FROM ubuntu:focal AS extension-builder
 
@@ -54,8 +85,9 @@ FROM lscr.io/linuxserver/code-server
 # add local files
 COPY ./root /
 
-COPY --from=binary-downloader /tmp/xpack-qemu-arm/ ./xpack-qemu-arm/
+COPY --from=gem5-builder /tmp/gem5/build/ARM/gem5.fast ./
 COPY --from=extension-builder /tmp/cortex-debug-dp-stm32f4-*.vsix ./
+COPY --from=binary-downloader /tmp/xpack-qemu-arm/ ./xpack-qemu-arm/
 
 RUN \
   echo "**** install vscode extensions ****" && \
@@ -67,11 +99,13 @@ RUN \
   apt-get install -y \
     gcc-arm-none-eabi \
     gdb-multiarch \
+    libprotobuf17 \
     make && \
   echo "**** link binaries ****" && \
+  mv gem5.fast /usr/bin/gem5 && \
   mv xpack-qemu-arm ~/.xpack-qemu-arm && \
   ln -s ~/.xpack-qemu-arm/bin/qemu-system-gnuarmeclipse /usr/bin/qemu-system-gnuarmeclipse && \
   ln -s /usr/bin/gdb-multiarch /usr/bin/arm-none-eabi-gdb && \
   echo "**** clean up ****" && \
   rm -rf \
-    ./cortex-debug-dp-stm32f4-*.vsix 
+    ./cortex-debug-dp-stm32f4-*.vsix
