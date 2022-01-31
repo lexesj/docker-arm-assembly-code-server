@@ -1,24 +1,5 @@
-# download binaries stage
-FROM ghcr.io/linuxserver/baseimage-ubuntu:focal AS binary-downloader
-
-WORKDIR /tmp
-
-RUN \
-  echo "**** install runtime dependencies ****" && \
-  apt-get update && \
-  apt-get install -y \
-    wget && \
-  echo "**** download binaries ****" && \
-  curl https://api.github.com/repos/xpack-dev-tools/qemu-arm-xpack/releases/latest | \
-    grep "browser_download_url" | \
-    grep -Eo "https://[^\"]*" | \
-    grep -m 1 "linux-x64" | \
-    xargs wget -O - | \
-    tar -xz && \
-  mv ./xpack-qemu-arm* ./xpack-qemu-arm
-
 # build extension stage
-FROM ghcr.io/linuxserver/baseimage-ubuntu:focal AS extension-builder
+FROM ubuntu:focal AS extension-builder
 
 WORKDIR /tmp
 
@@ -26,6 +7,7 @@ RUN \
   echo "**** install node repo ****" && \
   apt-get update && \
   apt-get install -y \
+    curl \
     gnupg && \
   curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && \
   echo 'deb https://deb.nodesource.com/node_14.x focal main' \
@@ -45,6 +27,26 @@ RUN \
   npm install && \
   yes | npx vsce package && \
   cp cortex-debug-dp-stm32f4-*.vsix ..
+
+# download binaries stage
+FROM ubuntu:focal AS binary-downloader
+
+WORKDIR /tmp
+
+RUN \
+  echo "**** install runtime dependencies ****" && \
+  apt-get update && \
+  apt-get install -y \
+    curl \
+    wget && \
+  echo "**** download binaries ****" && \
+  curl https://api.github.com/repos/xpack-dev-tools/qemu-arm-xpack/releases/latest | \
+    grep "browser_download_url" | \
+    grep -Eo "https://[^\"]*" | \
+    grep -m 1 "linux-x64" | \
+    xargs wget -O - | \
+    tar -xz && \
+  mv ./xpack-qemu-arm* ./xpack-qemu-arm
 
 # install stage
 FROM lscr.io/linuxserver/code-server
