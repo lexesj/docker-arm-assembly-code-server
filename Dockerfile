@@ -1,4 +1,4 @@
-from lscr.io/linuxserver/code-server
+FROM lscr.io/linuxserver/code-server
 
 # add local files
 COPY ./root /
