@@ -85,9 +85,9 @@ FROM lscr.io/linuxserver/code-server
 # add local files
 COPY ./root /
 
-COPY --from=gem5-builder /tmp/gem5/build/ARM/gem5.fast ./
+COPY --from=gem5-builder /tmp/gem5/build/ARM/gem5.fast /usr/local/bin/
 COPY --from=extension-builder /tmp/cortex-debug-dp-stm32f4-*.vsix ./
-COPY --from=binary-downloader /tmp/xpack-qemu-arm/ ./xpack-qemu-arm/
+COPY --from=binary-downloader /tmp/xpack-qemu-arm/ ~/.xpack-qemu-arm/
 
 RUN \
   echo "**** install vscode extensions ****" && \
@@ -102,10 +102,8 @@ RUN \
     libprotobuf17 \
     make && \
   echo "**** link binaries ****" && \
-  mv gem5.fast /usr/bin/gem5 && \
-  mv xpack-qemu-arm ~/.xpack-qemu-arm && \
-  ln -s ~/.xpack-qemu-arm/bin/qemu-system-gnuarmeclipse /usr/bin/qemu-system-gnuarmeclipse && \
-  ln -s /usr/bin/gdb-multiarch /usr/bin/arm-none-eabi-gdb && \
+  ln -s ~/.xpack-qemu-arm/bin/qemu-system-gnuarmeclipse /usr/local/bin/qemu-system-gnuarmeclipse && \
+  ln -s /usr/bin/gdb-multiarch /usr/local/bin/arm-none-eabi-gdb && \
   echo "**** clean up ****" && \
   rm -rf \
     ./cortex-debug-dp-stm32f4-*.vsix
