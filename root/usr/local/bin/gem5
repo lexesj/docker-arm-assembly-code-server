@@ -5,11 +5,11 @@ NAME="$(basename $0)"
 
 usage()
 {
-  echo "Usage: $NAME [ --remote-gdb-port=REMOTE_GDB_PORT ] [ -h, --help ]"
+  echo "Usage: $NAME [ --remote-gdb-port=REMOTE_GDB_PORT ] [ --wait-gdb ] [ -h, --help ]"
   exit 2
 }
 
-OPTS=$(getopt --options h --long remote-gdb-port:,help --name $NAME -- "$@")
+OPTS=$(getopt --options h --long remote-gdb-port:,wait-gdb,help --name $NAME -- "$@")
 
 if [ $? != 0 ]; then
   exit 2
@@ -31,6 +31,9 @@ while true ; do
       ;;
     -h|--help)
       usage
+      ;;
+    *)
+      break
       ;;
   esac
 done
