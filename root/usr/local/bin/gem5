@@ -35,4 +35,4 @@ while true ; do
   esac
 done
 
-/usr/local/bin/gem5.fast --remote-gdb-port=$REMOTE_GDB_PORT /etc/gem5-config/stm32f4 "$@"
+/usr/local/bin/gem5.fast --remote-gdb-port=$REMOTE_GDB_PORT /etc/gem5-config/stm32f4.py "$@"
