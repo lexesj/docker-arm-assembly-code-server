@@ -1,0 +1,38 @@
+#!/usr/bin/bash
+# shellcheck shell=bash
+
+NAME="$(basename $0)"
+
+usage()
+{
+  echo "Usage: $NAME [ --remote-gdb-port=REMOTE_GDB_PORT ] [ -h, --help ]"
+  exit 2
+}
+
+OPTS=$(getopt --options h --long remote-gdb-port:,help --name $NAME -- "$@")
+
+if [ $? != 0 ]; then
+  exit 2
+fi
+
+eval set -- $OPTS
+
+REMOTE_GDB_PORT=7000
+
+while true ; do
+  case "$1" in
+    --remote-gdb-port)
+      REMOTE_GDB_PORT="$2"
+      shift 2
+      ;;
+    --)
+      shift
+      break
+      ;;
+    -h|--help)
+      usage
+      ;;
+  esac
+done
+
+/usr/local/bin/gem5.fast --remote-gdb-port=REMOTE_GDB_PORT /etc/gem5-config/stm32f4 "$@"
