@@ -5,11 +5,10 @@ NAME="$(basename $0)"
 
 usage()
 {
-  echo "Usage: $NAME [ --remote-gdb-port=REMOTE_GDB_PORT ] [ --wait-gdb ] [ -h, --help ]"
-  exit 2
+  echo "Usage: $NAME [ --remote-gdb-port=REMOTE_GDB_PORT ] [ --listener-mode={on,off,auto} ] [ --wait-gdb ] [ -h, --help ]"
 }
 
-OPTS=$(getopt --options h --long remote-gdb-port:,wait-gdb,help --name $NAME -- "$@")
+OPTS=$(getopt --options h --long remote-gdb-port:,wait-gdb,help,listener-mode: --name $NAME -- "$@")
 
 if [ $? != 0 ]; then
   exit 2
@@ -18,6 +17,7 @@ fi
 eval set -- $OPTS
 
 REMOTE_GDB_PORT=7000
+LISTENER_MODE="auto"
 
 while true ; do
   case "$1" in
@@ -25,12 +25,17 @@ while true ; do
       REMOTE_GDB_PORT="$2"
       shift 2
       ;;
-    --)
-      shift
-      break
+    --listener-mode)
+      LISTENER_MODE="$2"
+      shift 2
       ;;
     -h|--help)
       usage
+      exit 2
+      ;;
+    --)
+      break
+      shift
       ;;
     *)
       break
@@ -38,4 +43,4 @@ while true ; do
   esac
 done
 
-/usr/local/bin/gem5.fast --remote-gdb-port=$REMOTE_GDB_PORT /etc/gem5-config/stm32f4.py "$@"
+/usr/local/bin/gem5.fast --listener-mode=$LISTENER_MODE --remote-gdb-port=$REMOTE_GDB_PORT /etc/gem5-config/stm32f4.py "$@"
