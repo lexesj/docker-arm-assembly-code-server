@@ -52,6 +52,13 @@ RUN \
     git \
     nodejs \
     yarn && \
+  echo "**** build cortex-debug extension ****" && \
+  git clone https://github.com/lexesjan/cortex-debug && \
+  cd ./cortex-debug && \
+  npm install && \
+  yes | npx vsce package && \
+  cp cortex-debug-*.vsix .. && \
+  cd .. && \
   echo "**** build cortex-debug-db-stm32f4 extension ****" && \
   git clone https://github.com/lexesjan/cortex-debug-db-stm32f4 && \
   cd ./cortex-debug-db-stm32f4 && \
@@ -86,13 +93,13 @@ FROM lscr.io/linuxserver/code-server
 COPY ./root /
 
 COPY --from=gem5-builder /tmp/gem5/build/ARM/gem5.fast /usr/local/bin/
-COPY --from=extension-builder /tmp/cortex-debug-dp-stm32f4-*.vsix ./
+COPY --from=extension-builder /tmp/cortex-debug-*.vsix ./
 COPY --from=binary-downloader /tmp/xpack-qemu-arm/ /opt/xpack-qemu-arm/
 
 RUN \
   echo "**** install vscode extensions ****" && \
-  install-extension marus25.cortex-debug && \
   install-extension dan-c-underwood.arm && \
+  install-extension cortex-debug-*.vsix && \
   install-extension cortex-debug-dp-stm32f4-*.vsix && \
   echo "**** install development dependencies ****" && \
   apt-get update && \
@@ -100,7 +107,8 @@ RUN \
     gcc-arm-none-eabi \
     gdb-multiarch \
     libprotobuf17 \
-    make && \
+    make \
+    psmisc && \
   echo "**** link binaries ****" && \
   ln -s /opt/xpack-qemu-arm/bin/qemu-system-gnuarmeclipse /usr/local/bin/qemu-system-gnuarmeclipse && \
   ln -s /usr/bin/gdb-multiarch /usr/bin/arm-none-eabi-gdb && \
