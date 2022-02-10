@@ -106,6 +106,7 @@ RUN \
   apt-get install -y \
     gcc-arm-none-eabi \
     gdb-multiarch \
+    libgoogle-perftools4 \
     libprotobuf17 \
     make \
     psmisc && \
