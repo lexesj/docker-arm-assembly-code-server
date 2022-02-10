@@ -25,7 +25,7 @@ RUN \
     libboost-all-dev \
     pkg-config && \
   echo "**** build gem5 ****" && \
-  git clone https://github.com/devplayer0/gem5 && \
+  git clone https://github.com/lexesjan/gem5 && \
   cd gem5 && \
   scons build/ARM/gem5.fast -j 16
 
