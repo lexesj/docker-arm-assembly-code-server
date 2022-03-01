@@ -41,6 +41,10 @@ system.membus = CM4XBar()
 system.membus.badaddr_responder = BadAddr()
 system.membus.default = system.membus.badaddr_responder.pio
 
+# Create a DWT and connect it to the membus
+system.dwt = ArmDWT(pio_addr=0xE0001000)
+system.dwt.pio = system.membus.mem_side_ports
+
 # Hook the CPU ports up to the membus
 system.cpu.icache_port = system.membus.cpu_side_ports
 system.cpu.dcache_port = system.membus.cpu_side_ports
@@ -62,7 +66,7 @@ system.scs.port = system.membus.mem_side_ports
 # Connect the system up to the membus
 system.system_port = system.membus.cpu_side_ports
 
-system.workload = ARMROMWorkload(rom_file=args.rom)
+system.workload = ArmROMWorkload(rom_file=args.rom)
 
 # Set the cpu to use the process as its workload and create thread contexts
 if args.wait_gdb:
