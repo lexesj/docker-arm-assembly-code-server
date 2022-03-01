@@ -42,8 +42,8 @@ system.membus.badaddr_responder = BadAddr()
 system.membus.default = system.membus.badaddr_responder.pio
 
 # Create a DWT and connect it to the membus
-system.dwt = ArmDWT(pio_addr=0xE0001000)
-system.dwt.pio = system.membus.mem_side_ports
+system.cpu.dwt = ArmDWT(pio_addr=0xE0001000)
+system.cpu.dwt.pio = system.membus.mem_side_ports
 
 # Hook the CPU ports up to the membus
 system.cpu.icache_port = system.membus.cpu_side_ports
