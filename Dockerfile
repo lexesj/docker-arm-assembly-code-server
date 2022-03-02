@@ -66,26 +66,6 @@ RUN \
   yes | npx vsce package && \
   cp cortex-debug-dp-stm32f4-*.vsix ..
 
-# download binaries stage
-FROM ubuntu:focal AS binary-downloader
-
-WORKDIR /tmp
-
-RUN \
-  echo "**** install runtime dependencies ****" && \
-  apt-get update && \
-  apt-get install -y \
-    curl \
-    wget && \
-  echo "**** download binaries ****" && \
-  curl https://api.github.com/repos/xpack-dev-tools/qemu-arm-xpack/releases/latest | \
-    grep "browser_download_url" | \
-    grep -Eo "https://[^\"]*" | \
-    grep -m 1 "linux-x64" | \
-    xargs wget -O - | \
-    tar -xz && \
-  mv ./xpack-qemu-arm* ./xpack-qemu-arm
-
 # install stage
 FROM lscr.io/linuxserver/code-server
 
@@ -94,7 +74,6 @@ COPY ./root /
 
 COPY --from=gem5-builder /tmp/gem5/build/ARM/gem5.fast /usr/local/bin/
 COPY --from=extension-builder /tmp/cortex-debug-*.vsix ./
-COPY --from=binary-downloader /tmp/xpack-qemu-arm/ /opt/xpack-qemu-arm/
 
 RUN \
   echo "**** install vscode extensions ****" && \
@@ -111,7 +90,6 @@ RUN \
     make \
     psmisc && \
   echo "**** link binaries ****" && \
-  ln -s /opt/xpack-qemu-arm/bin/qemu-system-gnuarmeclipse /usr/local/bin/qemu-system-gnuarmeclipse && \
   ln -s /usr/bin/gdb-multiarch /usr/bin/arm-none-eabi-gdb && \
   echo "**** clean up ****" && \
   rm -rf \

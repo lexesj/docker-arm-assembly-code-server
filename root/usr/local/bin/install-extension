@@ -1,4 +1,4 @@
 #!/usr/bin/bash
 # shellcheck shell=bash
 
-/usr/local/bin/code-server "--extensions-dir" "/config/extensions" "--install-extension" "$@"
+/app/code-server/bin/code-server "--extensions-dir" "/config/extensions" "--install-extension" "$@"
