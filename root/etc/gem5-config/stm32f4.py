@@ -45,6 +45,10 @@ system.membus.default = system.membus.badaddr_responder.pio
 system.cpu.dwt = ArmDWT(pio_addr=0xE0001000)
 system.cpu.dwt.pio = system.membus.mem_side_ports
 
+# Create an instruction counter and connect it to the membus
+system.cpu.instCounter = ArmInstCounter(pio_addr=0xE0003000)
+system.cpu.instCounter.pio = system.membus.mem_side_ports
+
 # Hook the CPU ports up to the membus
 system.cpu.icache_port = system.membus.cpu_side_ports
 system.cpu.dcache_port = system.membus.cpu_side_ports
