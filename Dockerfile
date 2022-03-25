@@ -56,6 +56,7 @@ RUN \
   git clone https://github.com/lexesjan/cortex-debug && \
   cd ./cortex-debug && \
   npm install && \
+  npm install react && \
   yes | npx vsce package && \
   cp cortex-debug-*.vsix .. && \
   cd .. && \
