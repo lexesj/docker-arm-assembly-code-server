@@ -84,6 +84,7 @@ RUN \
   echo "**** install development dependencies ****" && \
   apt-get update && \
   apt-get install -y \
+    binutils \
     gcc-arm-none-eabi \
     gdb-multiarch \
     libgoogle-perftools4 \
